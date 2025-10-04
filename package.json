@@ -1,0 +1,14 @@
+{
+  "name": "travel-slideshow",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "http-server -c-1 -p 3000 .",
+    "build": "node scripts/build.mjs",
+    "start": "http-server -c-1 -p 3000 dist"
+  },
+  "devDependencies": {
+    "http-server": "^14.1.1"
+  }
+}

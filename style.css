@@ -1,0 +1,293 @@
+:root {
+  --primary-color: #ecad29;
+  --text-color: rgba(255, 255, 255, 0.87);
+  --background-color: #1a1a1a;
+  --accent-border: rgba(255, 255, 255, 0.33);
+  --accent-border-strong: rgba(255, 255, 255, 0.33);
+  --accent-text: rgba(255, 255, 255, 0.6);
+  --card-shadow: 6px 6px 10px 2px rgba(0, 0, 0, 0.6);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background-color: var(--background-color);
+  color: var(--text-color);
+  position: relative;
+  overflow: hidden;
+  font-family: "Inter", sans-serif;
+}
+
+.slideshow {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.indicator {
+  position: fixed;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 5px;
+  z-index: 60;
+  background-color: var(--primary-color);
+}
+
+.card-stage {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.slideshow-card {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  box-shadow: var(--card-shadow);
+  overflow: hidden;
+  border-radius: 0;
+  cursor: pointer;
+}
+
+.slideshow-card--active {
+  cursor: default;
+  pointer-events: none;
+}
+
+.slideshow-card:not(.slideshow-card--active) .slideshow-card-media {
+  transition: transform 0.3s ease;
+}
+
+.slideshow-card:not(.slideshow-card--active):hover .slideshow-card-media {
+  transform: scale(1.05);
+}
+
+.slideshow-card-media {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.card-content {
+  position: absolute;
+  left: 0;
+  top: 0;
+  color: var(--text-color);
+  padding-left: 16px;
+  pointer-events: none;
+}
+
+.content-start {
+  width: 30px;
+  height: 5px;
+  border-radius: 99px;
+  background-color: var(--text-color);
+}
+
+.content-place {
+  margin-top: 6px;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.content-title-1,
+.content-title-2 {
+  font-weight: 600;
+  font-size: 18px;
+  font-family: "Oswald", sans-serif;
+}
+
+.details-panel {
+  z-index: 22;
+  position: absolute;
+  top: 240px;
+  left: 60px;
+  width: max-content;
+}
+
+.location-badge {
+  position: relative;
+  height: 46px;
+  overflow: hidden;
+}
+
+.location-text {
+  position: relative;
+  padding-top: 16px;
+  font-size: 20px;
+}
+
+.location-text::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 30px;
+  height: 4px;
+  border-radius: 99px;
+  background-color: #ffffff;
+}
+
+.title-wrapper {
+  margin-top: 2px;
+  height: 100px;
+  overflow: hidden;
+}
+
+.title-line {
+  font-weight: 600;
+  font-size: 72px;
+  font-family: "Oswald", sans-serif;
+  letter-spacing: 2px;
+}
+
+.description {
+  margin-top: 16px;
+  max-width: 500px;
+  line-height: 1.6;
+}
+
+.action-row {
+  display: flex;
+  align-items: center;
+  margin-top: 24px;
+  max-width: 500px;
+  gap: 16px;
+}
+
+.bookmark-button {
+  border: none;
+  background-color: var(--primary-color);
+  width: 36px;
+  height: 36px;
+  border-radius: 99px;
+  color: #ffffff;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+}
+
+.bookmark-button svg {
+  width: 20px;
+  height: 20px;
+}
+
+.discover-button {
+  border: 1px solid #ffffff;
+  background-color: transparent;
+  height: 36px;
+  border-radius: 99px;
+  color: #ffffff;
+  padding: 4px 24px;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  cursor: pointer;
+}
+
+.pagination {
+  position: absolute;
+  left: 0;
+  top: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 24px;
+}
+
+.pagination-arrow {
+  z-index: 60;
+  width: 50px;
+  height: 50px;
+  border-radius: 999px;
+  border: 2px solid rgba(255, 255, 255, 0.33);
+  display: grid;
+  place-items: center;
+  background-color: transparent;
+  cursor: pointer;
+}
+
+.pagination-arrow svg {
+  width: 24px;
+  height: 24px;
+  stroke-width: 2;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.progress-track {
+  display: flex;
+  align-items: center;
+  width: 360px;
+  height: 50px;
+  z-index: 60;
+}
+
+.progress-track-background {
+  width: 100%;
+  height: 3px;
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+.progress-fill {
+  width: 0;
+  height: 3px;
+  background-color: var(--primary-color);
+}
+
+.slide-index {
+  width: 50px;
+  height: 50px;
+  overflow: hidden;
+  position: relative;
+  z-index: 60;
+}
+
+.slide-index .item {
+  width: 50px;
+  height: 50px;
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: grid;
+  place-items: center;
+  font-size: 32px;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.transition-cover {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: #ffffff;
+  z-index: 100;
+}
+
+@media (max-width: 768px) {
+  .details-panel {
+    top: 160px;
+    left: 24px;
+  }
+
+  .title-line {
+    font-size: 48px;
+  }
+
+  .description {
+    max-width: 320px;
+    font-size: 14px;
+  }
+
+  .progress-track {
+    width: 260px;
+  }
+}
