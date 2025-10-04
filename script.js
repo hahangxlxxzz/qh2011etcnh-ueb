@@ -68,7 +68,22 @@ const getSliderItem = (index) => `#slide-item-${index}`;
 const updateActiveCardClass = () => {
   document.querySelectorAll(".slideshow-card").forEach((card) => {
     const index = Number(card.dataset.cardIndex);
-    card.classList.toggle("slideshow-card--active", index === state.order[0]);
+    const isActive = index === state.order[0];
+    card.classList.toggle("slideshow-card--active", isActive);
+    const vid = card.querySelector('video');
+    if (vid) {
+      try {
+        if (isActive) {
+          vid.muted = true;
+          vid.play().catch(() => {});
+        } else {
+          vid.pause();
+          try { vid.currentTime = 0; } catch (e) {}
+        }
+      } catch (e) {
+        // ignore
+      }
+    }
   });
 };
 
