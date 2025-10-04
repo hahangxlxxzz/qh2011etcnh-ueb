@@ -590,17 +590,19 @@ const attachEventListeners = () => {
 
   const pauseBtn = document.querySelector('.pause-button');
   if (pauseBtn) {
+    // set initial icon
+    pauseBtn.innerHTML = PAUSE_SVG;
     pauseBtn.addEventListener('click', () => {
       if (state.autoActive) {
         stopAutoCycle();
         pauseBtn.classList.add('paused');
         pauseBtn.setAttribute('aria-pressed', 'true');
-        pauseBtn.textContent = 'Resume';
+        pauseBtn.innerHTML = PLAY_SVG;
       } else {
         state.autoActive = true;
         pauseBtn.classList.remove('paused');
         pauseBtn.setAttribute('aria-pressed', 'false');
-        pauseBtn.textContent = 'Pause';
+        pauseBtn.innerHTML = PAUSE_SVG;
         loop();
       }
     });
