@@ -29,6 +29,9 @@ const resolveImagePath = (imagePath) => {
 
 const FALLBACK_IMAGE = resolveImagePath('img/img-20111105.jpg');
 
+const PAUSE_SVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="5" width="4" height="14" rx="1"/></svg>`;
+const PLAY_SVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M5 3v18l15-9L5 3z"/></svg>`;
+
 const byId = (id) => document.getElementById(id);
 const cardStage = byId("card-stage");
 const slideNumbers = byId("slide-numbers");
