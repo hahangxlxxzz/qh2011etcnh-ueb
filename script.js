@@ -639,6 +639,45 @@ function init() {
   gsap.to(detailsActive, { opacity: 1, x: 0, ease, delay: startDelay });
 }
 
+const reverseAdvance = () =>
+  new Promise((resolve) => {
+    // move last item to front
+    const last = state.order.pop();
+    state.order.unshift(last);
+    state.detailsEven = !state.detailsEven;
+    const detailsActive = state.detailsEven ? "#details-even" : "#details-odd";
+    updateDetailsPanel(detailsActive, destinations[state.order[0]]);
+    updateActiveCardClass();
+
+    computePreviewOffsets(state.order.length - 1);
+
+    // quickly set positions without heavy animation for reliability
+    const [active, ...rest] = state.order;
+    gsap.set(getCard(active), { x: 0, y: 0, width: window.innerWidth, height: window.innerHeight });
+
+    rest.forEach((index, position) => {
+      const xTarget = state.offsetLeft + position * (state.cardWidth + state.gap);
+      gsap.set(getCard(index), {
+        x: xTarget,
+        y: state.offsetTop,
+        width: state.cardWidth,
+        height: state.cardHeight,
+        zIndex: 30,
+        borderRadius: 16,
+      });
+      gsap.set(getCardContent(index), {
+        x: xTarget,
+        y: state.offsetTop + state.cardHeight - PREVIEW_CONTENT_OFFSET,
+        opacity: 1,
+        zIndex: 40,
+      });
+    });
+
+    // ensure videos respond
+    updateActiveCardClass();
+    setTimeout(resolve, 120);
+  });
+
 const attachEventListeners = () => {
   cardStage.addEventListener("click", handleCardClick);
   window.addEventListener("resize", handleResize);
@@ -665,6 +704,58 @@ const attachEventListeners = () => {
       }
     });
   }
+
+  // drag to navigate
+  let pointerDown = false;
+  let startX = 0;
+  let currentX = 0;
+  const THRESHOLD = 80;
+  let activeIndex = null;
+
+  const onPointerDown = (e) => {
+    const card = e.target.closest('.slideshow-card');
+    if (!card) return;
+    activeIndex = Number(card.dataset.cardIndex);
+    if (activeIndex !== state.order[0]) return;
+
+    pointerDown = true;
+    startX = e.clientX || (e.touches && e.touches[0].clientX) || 0;
+    stopAutoCycle(false); // temporary stop
+  };
+
+  const onPointerMove = (e) => {
+    if (!pointerDown) return;
+    currentX = e.clientX || (e.touches && e.touches[0].clientX) || 0;
+    const dx = currentX - startX;
+    // move active card
+    try {
+      gsap.set(getCard(state.order[0]), { x: dx });
+    } catch (err) {}
+  };
+
+  const onPointerUp = async (e) => {
+    if (!pointerDown) return;
+    pointerDown = false;
+    const dx = currentX - startX;
+    try {
+      // animate back if below threshold
+      if (dx < -THRESHOLD) {
+        await runStep(false);
+      } else if (dx > THRESHOLD) {
+        await reverseAdvance();
+      } else {
+        gsap.to(getCard(state.order[0]), { x: 0, duration: 0.2 });
+      }
+    } catch (err) {
+      console.error(err);
+    }
+    // schedule resume (unless user paused)
+    scheduleAutoResume();
+  };
+
+  cardStage.addEventListener('pointerdown', onPointerDown);
+  window.addEventListener('pointermove', onPointerMove);
+  window.addEventListener('pointerup', onPointerUp);
 };
 
 // Zoom / pan support for images (desktop and mobile)
