@@ -74,13 +74,15 @@ body {
 .slideshow-card-media {
   width: 100vw;
   height: 100vh;
-  object-fit: contain; /* show entire image without cropping */
+  object-fit: cover; /* reverted: cover by default */
   display: block;
-  background-color: #000; /* letterbox background */
 }
 
-/* ensure portrait/landscape both use contain to avoid cropping */
-.slideshow-card-media.orient-landscape,
+/* orientation helpers: landscape covers, portrait contains */
+.slideshow-card-media.orient-landscape {
+  object-fit: cover;
+}
+
 .slideshow-card-media.orient-portrait {
   object-fit: contain;
 }
