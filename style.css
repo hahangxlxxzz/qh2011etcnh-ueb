@@ -325,6 +325,6 @@ body {
 
   .pagination {
     left: 8px;
-    top: 8px;
+    bottom: 48px;
   }
 }
