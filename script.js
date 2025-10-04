@@ -267,6 +267,9 @@ const advance = () =>
         gsap.set(`${detailsInactive} .title-line--secondary`, { y: 100 });
         gsap.set(`${detailsInactive} .description`, { y: 50 });
         gsap.set(`${detailsInactive} .action-row`, { y: 60 });
+
+        // reset any zoom/pan transforms after transition completes
+        try { resetAllImageTransforms(); } catch (e) { /* ignore */ }
       },
     });
 
