@@ -462,7 +462,8 @@ const applyImageOrientations = () => {
 };
 
 const fetchDestinations = async () => {
-  const response = await fetch("data/destinations.json");
+  // append timestamp to avoid stale caching when editing the JSON
+  const response = await fetch(`data/destinations.json?ts=${Date.now()}`);
   if (!response.ok) {
     throw new Error("Không thể tải dữ liệu slideshow");
   }
