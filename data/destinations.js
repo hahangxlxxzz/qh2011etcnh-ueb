@@ -1,10 +1,10 @@
 {
   "destinations": [
     {
-      "place": "Switzerland Alps",
-      "title": "SAINT",
-      "title2": "ANTONIEN",
-      "description": "Tucked away in the Switzerland Alps, Saint Antönien offers an idyllic retreat for those seeking tranquility and adventure alike.",
+      "place": "Ảnh số 1",
+      "title": "Tiêu đề 1",
+      "title2": "Tiêu đề 2",
+      "description": "TNội dung",
       "image": "data/img/img-20111105-1.jpg"
     },
     {
