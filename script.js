@@ -352,15 +352,17 @@ const loop = async () => {
   if (state.autoActive) loop();
 };
 
-const stopAutoCycle = () => {
+const stopAutoCycle = (userInitiated = false) => {
   state.autoActive = false;
   clearTimeout(state.resumeTimeout);
+  if (userInitiated) state.userPaused = true;
 };
 
 const scheduleAutoResume = () => {
+  if (state.userPaused) return; // do not auto-resume when user explicitly paused
   clearTimeout(state.resumeTimeout);
   state.resumeTimeout = setTimeout(() => {
-    if (!state.autoActive) {
+    if (!state.autoActive && !state.userPaused) {
       state.autoActive = true;
       loop();
     }
