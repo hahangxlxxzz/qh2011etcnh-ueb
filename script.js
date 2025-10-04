@@ -355,6 +355,7 @@ const loop = async () => {
 
 const stopAutoCycle = (userInitiated = false) => {
   state.autoActive = false;
+  state.loopToken += 1; // invalidate any running loops
   clearTimeout(state.resumeTimeout);
   if (userInitiated) state.userPaused = true;
 };
