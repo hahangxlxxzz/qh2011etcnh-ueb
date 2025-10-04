@@ -509,9 +509,17 @@ const applyImageOrientations = () => {
       if (h > w) {
         el.classList.add('orient-portrait');
         el.classList.remove('orient-landscape');
+        // full height when taller
+        el.style.height = '100vh';
+        el.style.width = 'auto';
+        el.style.objectFit = 'contain';
       } else {
         el.classList.add('orient-landscape');
         el.classList.remove('orient-portrait');
+        // full width when wider
+        el.style.width = '100vw';
+        el.style.height = 'auto';
+        el.style.objectFit = 'contain';
       }
     } catch (e) {
       // ignore
