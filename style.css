@@ -32,6 +32,13 @@ body {
   display: none !important; /* progress indicator removed */
 }
 
+/* hide the progress track on the card stage */
+.progress-track,
+.progress-track-background,
+.progress-fill {
+  display: none !important;
+}
+
 .card-stage {
   position: relative;
   width: 100%;
@@ -67,8 +74,15 @@ body {
 .slideshow-card-media {
   width: 100vw;
   height: 100vh;
-  object-fit: cover;
+  object-fit: contain; /* show entire image without cropping */
   display: block;
+  background-color: #000; /* letterbox background */
+}
+
+/* ensure portrait/landscape both use contain to avoid cropping */
+.slideshow-card-media.orient-landscape,
+.slideshow-card-media.orient-portrait {
+  object-fit: contain;
 }
 
 .card-content {
