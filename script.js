@@ -52,6 +52,7 @@ const state = {
   isTransitioning: false,
   resumeTimeout: null,
   userPaused: false,
+  loopToken: 0,
 };
 
 const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
