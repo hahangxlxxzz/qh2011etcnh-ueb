@@ -214,8 +214,8 @@ body {
 
 .pagination {
   position: absolute;
-  left: 12px;
-  top: 12px;
+  left: 24px;
+  bottom: 24px; /* moved lower near cards */
   display: inline-flex;
   align-items: center;
   gap: 12px;
