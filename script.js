@@ -114,12 +114,21 @@ const animate = (target, duration, properties) =>
 
 const renderSlides = () => {
   const cardsMarkup = destinations
-    .map(
-      (item, index) => `
+    .map((item, index) => {
+      const src = item.image || '';
+      const isVideo = isVideoSrc(src);
+      if (isVideo) {
+        return `
         <article class="slideshow-card" id="card${index}" data-card-index="${index}">
-          <img class="slideshow-card-media" src="${item.image}" alt="${item.place}" loading="lazy" onerror="this.onerror=null; this.src='${FALLBACK_IMAGE}'" />
-        </article>`
-    )
+          <video class="slideshow-card-media" src="${src}" poster="${FALLBACK_IMAGE}" preload="metadata" playsinline muted loop></video>
+        </article>`;
+      }
+
+      return `
+        <article class="slideshow-card" id="card${index}" data-card-index="${index}">
+          <img class="slideshow-card-media" src="${src}" alt="${item.place}" loading="lazy" onerror="this.onerror=null; this.src='${FALLBACK_IMAGE}'" />
+        </article>`;
+    })
     .join("");
 
   const cardContentMarkup = destinations
