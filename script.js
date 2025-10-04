@@ -51,6 +51,7 @@ const state = {
   autoActive: false,
   isTransitioning: false,
   resumeTimeout: null,
+  userPaused: false,
 };
 
 const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
