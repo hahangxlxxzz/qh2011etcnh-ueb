@@ -472,17 +472,31 @@ const loadImages = async () => {
 };
 
 const applyImageOrientations = () => {
-  document.querySelectorAll('.slideshow-card-media').forEach((img) => {
+  document.querySelectorAll('.slideshow-card-media').forEach((el) => {
     try {
-      const w = img.naturalWidth || img.width || 0;
-      const h = img.naturalHeight || img.height || 0;
-      if (!w || !h) return;
+      const isVideo = el.tagName === 'VIDEO';
+      const getDims = () => {
+        if (isVideo) return { w: el.videoWidth || el.clientWidth, h: el.videoHeight || el.clientHeight };
+        return { w: el.naturalWidth || el.width || el.clientWidth, h: el.naturalHeight || el.height || el.clientHeight };
+      };
+
+      const { w, h } = getDims();
+      if (!w || !h) {
+        // wait for metadata/load
+        if (isVideo) {
+          el.addEventListener('loadedmetadata', () => applyImageOrientations(), { once: true });
+        } else {
+          el.addEventListener('load', () => applyImageOrientations(), { once: true });
+        }
+        return;
+      }
+
       if (h > w) {
-        img.classList.add('orient-portrait');
-        img.classList.remove('orient-landscape');
+        el.classList.add('orient-portrait');
+        el.classList.remove('orient-landscape');
       } else {
-        img.classList.add('orient-landscape');
-        img.classList.remove('orient-portrait');
+        el.classList.add('orient-landscape');
+        el.classList.remove('orient-portrait');
       }
     } catch (e) {
       // ignore
