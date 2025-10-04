@@ -95,6 +95,7 @@ body {
   padding: 6px 8px;
   pointer-events: none;
   text-align: left;
+  z-index: 90;
 }
 
 .content-start {
@@ -213,11 +214,12 @@ body {
 
 .pagination {
   position: absolute;
-  left: 0;
-  top: 0;
+  left: 12px;
+  top: 12px;
   display: inline-flex;
   align-items: center;
-  gap: 24px;
+  gap: 12px;
+  z-index: 90;
 }
 
 .pagination-arrow {
@@ -240,11 +242,7 @@ body {
 }
 
 .progress-track {
-  display: flex;
-  align-items: center;
-  width: 360px;
-  height: 50px;
-  z-index: 60;
+  display: none; /* hidden on cards */
 }
 
 .progress-track-background {
@@ -262,6 +260,25 @@ body {
 .slide-index {
   display: none; /* slide numbers removed */
 }
+
+.pause-button {
+  background: var(--primary-color);
+  color: #111;
+  border: none;
+  padding: 8px 10px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.pause-button.paused {
+  background: rgba(255,255,255,0.12);
+  color: #fff;
+}
+
+/* zoom cursor */
+.slideshow-card-media { cursor: grab; }
+.slideshow-card-media:active { cursor: grabbing; }
 
 /* orientation helpers for images */
 .slideshow-card-media.orient-landscape {
@@ -288,20 +305,22 @@ body {
 
 @media (max-width: 768px) {
   .details-panel {
-    top: 160px;
-    left: 24px;
+    top: 8px;
+    left: 8px;
+    width: calc(100% - 16px);
   }
 
   .title-line {
-    font-size: 48px;
+    font-size: 22px;
   }
 
   .description {
     max-width: 320px;
-    font-size: 14px;
+    font-size: 13px;
   }
 
-  .progress-track {
-    width: 260px;
+  .pagination {
+    left: 8px;
+    top: 8px;
   }
 }
