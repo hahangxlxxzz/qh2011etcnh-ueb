@@ -29,13 +29,7 @@ body {
 }
 
 .indicator {
-  position: fixed;
-  left: 0;
-  right: 0;
-  top: 0;
-  height: 5px;
-  z-index: 60;
-  background-color: var(--primary-color);
+  display: none !important; /* progress indicator removed */
 }
 
 .card-stage {
@@ -48,8 +42,8 @@ body {
   position: absolute;
   left: 0;
   top: 0;
-  width: 100%;
-  height: 100%;
+  width: 100vw;
+  height: 100vh;
   box-shadow: var(--card-shadow);
   overflow: hidden;
   border-radius: 0;
@@ -71,8 +65,8 @@ body {
 }
 
 .slideshow-card-media {
-  width: 100%;
-  height: 100%;
+  width: 100vw;
+  height: 100vh;
   object-fit: cover;
   display: block;
 }
@@ -111,11 +105,12 @@ body {
 }
 
 .details-panel {
-  z-index: 22;
+  z-index: 80;
   position: absolute;
-  top: 240px;
-  left: 60px;
-  width: max-content;
+  top: 12px;
+  left: 12px;
+  width: calc(100% - 24px);
+  color: var(--text-color);
 }
 
 .location-badge {
@@ -149,15 +144,17 @@ body {
 
 .title-line {
   font-weight: 600;
-  font-size: 72px;
+  font-size: 40px;
   font-family: "Oswald", sans-serif;
-  letter-spacing: 2px;
+  letter-spacing: 1px;
+  margin: 0;
 }
 
 .description {
-  margin-top: 16px;
-  max-width: 500px;
-  line-height: 1.6;
+  margin-top: 8px;
+  max-width: 640px;
+  line-height: 1.3;
+  font-size: 14px;
 }
 
 .action-row {
@@ -258,9 +255,9 @@ body {
 }
 
 .slideshow-card-media.orient-portrait {
-  width: auto;
-  height: 100%;
-  object-fit: contain;
+  width: 100vw;
+  height: 100vh;
+  object-fit: cover; /* always cover to keep full-width */
 }
 
 .transition-cover {
