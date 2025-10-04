@@ -290,18 +290,8 @@ body {
 .slideshow-card-media { cursor: grab; }
 .slideshow-card-media:active { cursor: grabbing; }
 
-/* orientation helpers for images */
-.slideshow-card-media.orient-landscape {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.slideshow-card-media.orient-portrait {
-  width: 100vw;
-  height: 100vh;
-  object-fit: cover; /* always cover to keep full-width */
-}
+/* (removed duplicate conflicting orientation rules) */
+/* orientation defined earlier to ensure contain and centering */
 
 .transition-cover {
   position: absolute;
