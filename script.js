@@ -27,6 +27,8 @@ const resolveImagePath = (imagePath) => {
   return `data/${normalizedPath}`;
 };
 
+const FALLBACK_IMAGE = resolveImagePath('img/img-20111105.jpg');
+
 const byId = (id) => document.getElementById(id);
 const cardStage = byId("card-stage");
 const slideNumbers = byId("slide-numbers");
@@ -112,7 +114,7 @@ const renderSlides = () => {
     .map(
       (item, index) => `
         <article class="slideshow-card" id="card${index}" data-card-index="${index}">
-          <img class="slideshow-card-media" src="${item.image}" alt="${item.place}" loading="lazy" />
+          <img class="slideshow-card-media" src="${item.image}" alt="${item.place}" loading="lazy" onerror="this.onerror=null; this.src='${FALLBACK_IMAGE}'" />
         </article>`
     )
     .join("");
@@ -435,7 +437,13 @@ const loadImage = (src, tried = false) =>
     img.src = src;
   });
 
-const loadImages = () => Promise.all(destinations.map(({ image }) => loadImage(image)));
+const loadImages = async () => {
+  const results = await Promise.allSettled(destinations.map(({ image }) => loadImage(image)));
+  const failed = results.filter((r) => r.status === "rejected").length;
+  if (failed > 0) {
+    console.warn(`Some images failed to load: ${failed}`);
+  }
+};
 
 const fetchDestinations = async () => {
   const response = await fetch("data/destinations.json");
