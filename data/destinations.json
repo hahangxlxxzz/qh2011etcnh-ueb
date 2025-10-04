@@ -2,35 +2,35 @@
   "destinations": [
     {
       "place": "QH2011E-TCNH-UEB",
-      "title": "QH2011E-TCNH-UEB",
+      "title": "",
       "title2": "",
       "description": "",
       "image": "data/img/img-20111105-1.jpg"
     },
     {
       "place": "QH2011E-TCNH-UEB",
-      "title": "NAGANO",
+      "title": "",
       "title2": "",
       "description": "",
       "image": "data/img/img-20111105-2.jpg"
     },
     {
       "place": "QH2011E-TCNH-UEB",
-      "title": "MARRAKECH",
+      "title": "",
       "title2": "",
       "description": "",
       "image": "data/img/img-20111105.jpg"
     },
     {
       "place": "QH2011E-TCNH-UEB",
-      "title": "DOLOMITI",
+      "title": "",
       "title2": "",
       "description": "",
       "image": "data/img/img-20121012-1.jpg"
     },
     {
       "place": "QH2011E-TCNH-UEB",
-      "title": "AEGEAN",
+      "title": "",
       "title2": "",
       "description": "",
       "image": "data/img/img-20121012.jpg"
@@ -151,7 +151,7 @@
       "place": "QH2011E-TCNH-UEB",
       "title": "",
       "title2": "",
-      "description": "S",
+      "description": "",
       "image": "data/img/img-20240312.jpg"
     },
     {
