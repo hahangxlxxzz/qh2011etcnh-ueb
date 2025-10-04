@@ -54,6 +54,7 @@ body {
   overflow: hidden;
   border-radius: 0;
   cursor: pointer;
+  will-change: transform;
 }
 
 .slideshow-card--active {
@@ -78,11 +79,12 @@ body {
 
 .card-content {
   position: absolute;
-  left: 0;
-  top: 0;
+  left: 12px;
+  top: 12px;
   color: var(--text-color);
-  padding-left: 16px;
+  padding: 6px 8px;
   pointer-events: none;
+  text-align: left;
 }
 
 .content-start {
@@ -93,16 +95,19 @@ body {
 }
 
 .content-place {
-  margin-top: 6px;
-  font-size: 13px;
-  font-weight: 500;
+  margin-top: 2px;
+  font-size: 11px;
+  font-weight: 600;
+  opacity: 0.95;
 }
 
 .content-title-1,
 .content-title-2 {
-  font-weight: 600;
-  font-size: 18px;
+  font-weight: 700;
+  font-size: 12px;
   font-family: "Oswald", sans-serif;
+  letter-spacing: 1px;
+  line-height: 1;
 }
 
 .details-panel {

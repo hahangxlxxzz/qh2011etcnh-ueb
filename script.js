@@ -1,5 +1,5 @@
-const PREVIEW_MARGIN = 48;
-const PREVIEW_CONTENT_OFFSET = 72;
+const PREVIEW_MARGIN = 24;
+const PREVIEW_CONTENT_OFFSET = 56;
 const AUTO_RESUME_DELAY = 5000;
 const ease = "sine.inOut";
 
@@ -41,10 +41,10 @@ const state = {
   detailsEven: true,
   offsetTop: 200,
   offsetLeft: 700,
-  cardWidth: 180,
-  cardHeight: 120,
-  gap: 24,
-  numberSize: 50,
+  cardWidth: 140,
+  cardHeight: 90,
+  gap: 18,
+  numberSize: 40,
   autoActive: false,
   isTransitioning: false,
   resumeTimeout: null,
