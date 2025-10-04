@@ -56,6 +56,9 @@ body {
   border-radius: 0;
   cursor: pointer;
   will-change: transform;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .slideshow-card--active {
