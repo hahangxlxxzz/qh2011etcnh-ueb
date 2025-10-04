@@ -265,8 +265,12 @@ body {
   background: var(--primary-color);
   color: #111;
   border: none;
-  padding: 8px 10px;
-  border-radius: 8px;
+  width: 44px;
+  height: 44px;
+  padding: 8px;
+  border-radius: 10px;
+  display: grid;
+  place-items: center;
   font-weight: 600;
   cursor: pointer;
 }
