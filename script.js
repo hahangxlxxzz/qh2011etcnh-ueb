@@ -349,8 +349,12 @@ const runStep = async (withIndicator = true) => {
 
 const loop = async () => {
   if (!state.autoActive) return;
-  await runStep(true);
-  if (state.autoActive) loop();
+  const token = ++state.loopToken;
+  while (state.autoActive && token === state.loopToken) {
+    await runStep(true);
+    // small check to allow cancellation between steps
+    if (!state.autoActive || token !== state.loopToken) break;
+  }
 };
 
 const stopAutoCycle = (userInitiated = false) => {
