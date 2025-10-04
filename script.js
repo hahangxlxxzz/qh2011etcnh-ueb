@@ -465,7 +465,7 @@ const fetchDestinations = async () => {
   // append timestamp to avoid stale caching when editing the JSON
   const response = await fetch(`data/destinations.json?ts=${Date.now()}`);
   if (!response.ok) {
-    throw new Error("Không thể tải dữ liệu slideshow");
+    throw new Error("Không thể tải d��� liệu slideshow");
   }
 
   const payload = await response.json();
@@ -727,6 +727,7 @@ const start = async () => {
     attachEventListeners();
     await loadImages();
     applyImageOrientations();
+    enableZoomForAll();
     init();
   } catch (error) {
     console.error('Start error:', error && error.message ? error.message : error, error);
