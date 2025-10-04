@@ -133,12 +133,8 @@ const renderSlides = () => {
 
   cardStage.innerHTML = `${cardsMarkup}${cardContentMarkup}`;
 
-  const slideNumberMarkup = destinations
-    .map(
-      (_, index) => `<div class="item" id="slide-item-${index}">${index + 1}</div>`
-    )
-    .join("");
-  slideNumbers.innerHTML = slideNumberMarkup;
+  // slide numbers removed; keep the container empty
+  slideNumbers.innerHTML = "";
 };
 
 const playIndicator = async () => {
@@ -443,6 +439,26 @@ const loadImages = async () => {
   if (failed > 0) {
     console.warn(`Some images failed to load: ${failed}`);
   }
+  return results;
+};
+
+const applyImageOrientations = () => {
+  document.querySelectorAll('.slideshow-card-media').forEach((img) => {
+    try {
+      const w = img.naturalWidth || img.width || 0;
+      const h = img.naturalHeight || img.height || 0;
+      if (!w || !h) return;
+      if (h > w) {
+        img.classList.add('orient-portrait');
+        img.classList.remove('orient-landscape');
+      } else {
+        img.classList.add('orient-landscape');
+        img.classList.remove('orient-portrait');
+      }
+    } catch (e) {
+      // ignore
+    }
+  });
 };
 
 const fetchDestinations = async () => {
@@ -577,6 +593,7 @@ const start = async () => {
     updateActiveCardClass();
     attachEventListeners();
     await loadImages();
+    applyImageOrientations();
     init();
   } catch (error) {
     console.error('Start error:', error && error.message ? error.message : error, error);
