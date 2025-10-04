@@ -120,7 +120,7 @@ const renderSlides = () => {
       if (isVideo) {
         return `
         <article class="slideshow-card" id="card${index}" data-card-index="${index}">
-          <video class="slideshow-card-media" src="${src}" poster="${FALLBACK_IMAGE}" preload="metadata" playsinline muted loop></video>
+          <video class="slideshow-card-media" src="${src}" poster="${FALLBACK_IMAGE}" preload="metadata" playsinline muted loop autoplay></video>
         </article>`;
       }
 
