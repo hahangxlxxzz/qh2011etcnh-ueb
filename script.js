@@ -421,8 +421,22 @@ const normalizeImageSrc = (src) => {
   return src;
 };
 
+const isVideoSrc = (src) => /\.(mp4|webm|ogg)(\?.*)?$/i.test(src) || /^https?:\/\/.+\.(mp4|webm|ogg)(\?.*)?$/i.test(src);
+
 const loadImage = (src, tried = false) =>
   new Promise((resolve, reject) => {
+    if (!src) return reject(new Error('No src'));
+    if (isVideoSrc(src)) {
+      const vid = document.createElement('video');
+      vid.preload = 'metadata';
+      vid.muted = true;
+      vid.playsInline = true;
+      vid.onloadedmetadata = () => resolve(vid);
+      vid.onerror = () => reject(new Error(`Failed to load video: ${src}`));
+      vid.src = src;
+      return;
+    }
+
     const img = new Image();
     img.onload = () => resolve(img);
     img.onerror = () => {
