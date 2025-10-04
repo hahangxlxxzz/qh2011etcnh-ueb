@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Trình chiếu ���nh du lịch</title>
+    <title>QH2011e-TCNH-UEB</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -37,18 +37,7 @@
           hidden gem for backcountry skiing in winter and boasts lush trails for
           hiking and mountain biking during the warmer months.
         </p>
-        <div class="action-row">
-          <button class="bookmark-button" type="button" aria-label="Lưu địa điểm">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
-              <path
-                fill-rule="evenodd"
-                d="M6.32 2.577a49.255 49.255 0 0111.36 0c1.497.174 2.57 1.46 2.57 2.93V21a.75.75 0 01-1.085.67L12 18.089l-7.165 3.583A.75.75 0 013.75 21V5.507c0-1.47 1.073-2.756 2.57-2.93z"
-                clip-rule="evenodd"
-              />
-            </svg>
-          </button>
-          <button class="discover-button" type="button">Khám phá địa điểm</button>
-        </div>
+        <div class="action-row"></div>
       </section>
 
       <section
@@ -71,37 +60,17 @@
           hidden gem for backcountry skiing in winter and boasts lush trails for
           hiking and mountain biking during the warmer months.
         </p>
-        <div class="action-row">
-          <button class="bookmark-button" type="button" aria-label="Lưu địa điểm">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
-              <path
-                fill-rule="evenodd"
-                d="M6.32 2.577a49.255 49.255 0 0111.36 0c1.497.174 2.57 1.46 2.57 2.93V21a.75.75 0 01-1.085.67L12 18.089l-7.165 3.583A.75.75 0 013.75 21V5.507c0-1.47 1.073-2.756 2.57-2.93z"
-                clip-rule="evenodd"
-              />
-            </svg>
-          </button>
-          <button class="discover-button" type="button">Khám phá địa điểm</button>
-        </div>
+        <div class="action-row"></div>
       </section>
 
       <div id="pagination" class="pagination">
-        <button class="pagination-arrow pagination-arrow--left" type="button" aria-label="Ảnh trước">
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
-          </svg>
-        </button>
-        <button class="pagination-arrow pagination-arrow--right" type="button" aria-label="Ảnh tiếp theo">
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
-          </svg>
-        </button>
         <div class="progress-track" aria-hidden="true">
           <div class="progress-track-background">
             <div class="progress-fill"></div>
           </div>
         </div>
-        <div id="slide-numbers" class="slide-index"></div>
+        <div id="slide-numbers" class="slide-index" aria-hidden="true"></div>
+        <button class="pause-button" type="button" aria-pressed="false" aria-label="Pause slideshow" title="Pause slideshow"> </button>
       </div>
 
       <div class="transition-cover cover" aria-hidden="true"></div>

@@ -1,0 +1,165 @@
+{
+  "destinations": [
+    {
+      "place": "QH2011E-TCNH-UEB",
+      "title": "",
+      "title2": "",
+      "description": "",
+      "image": "data/img/img-20111105-1.jpg"
+    },
+    {
+      "place": "QH2011E-TCNH-UEB",
+      "title": "",
+      "title2": "",
+      "description": "",
+      "image": "data/img/img-20111105-2.jpg"
+    },
+    {
+      "place": "QH2011E-TCNH-UEB",
+      "title": "",
+      "title2": "",
+      "description": "",
+      "image": "data/img/img-20111105.jpg"
+    },
+    {
+      "place": "QH2011E-TCNH-UEB",
+      "title": "",
+      "title2": "",
+      "description": "",
+      "image": "data/img/img-20121012-1.jpg"
+    },
+    {
+      "place": "QH2011E-TCNH-UEB",
+      "title": "",
+      "title2": "",
+      "description": "",
+      "image": "data/img/img-20121012.jpg"
+    },
+    {
+      "place": "QH2011E-TCNH-UEB",
+      "title": "",
+      "title2": "",
+      "description": "",
+      "image": "data/img/img-20130422-1.jpg"
+    },
+    {
+      "place": "QH2011E-TCNH-UEB",
+      "title": "",
+      "title2": "",
+      "description": "",
+      "image": "data/img/img-20130422.jpg"
+    },
+    {
+      "place": "QH2011E-TCNH-UEB",
+      "title": "",
+      "title2": "",
+      "description": "",
+      "image": "data/img/img-20140622.jpg"
+    },
+    {
+      "place": "QH2011E-TCNH-UEB",
+      "title": "",
+      "title2": "",
+      "description": "",
+      "image": "data/img/img-20140701.jpg"
+    },
+    {
+      "place": "QH2011E-TCNH-UEB",
+      "title": "",
+      "title2": "",
+      "description": "",
+      "image": "data/img/img-20141020.jpg"
+    },
+    {
+      "place": "QH2011E-TCNH-UEB",
+      "title": "",
+      "title2": "",
+      "description": "",
+      "image": "data/img/img-20150319.jpg"
+    },
+    {
+      "place": "QH2011E-TCNH-UEB",
+      "title": "",
+      "title2": "",
+      "description": "",
+      "image": "data/img/img-20150413.jpg"
+    },
+    {
+      "place": "QH2011E-TCNH-UEB",
+      "title": "",
+      "title2": "",
+      "description": "",
+      "image": "data/img/img-20150415.jpg"
+    },
+    {
+      "place": "QH2011E-TCNH-UEB",
+      "title": "",
+      "title2": "",
+      "description": "",
+      "image": "data/img/img-20171119.jpg"
+    },
+    {
+      "place": "QH2011E-TCNH-UEB",
+      "title": "",
+      "title2": "",
+      "description": "",
+      "image": "data/img/img-20190118.jpg"
+    },
+    {
+      "place": "QH2011E-TCNH-UEB",
+      "title": "",
+      "title2": "",
+      "description": "",
+      "image": "data/img/img-20240312-1.jpg"
+    },
+    {
+      "place": "QH2011E-TCNH-UEB",
+      "title": "",
+      "title2": "",
+      "description": "H",
+      "image": "data/img/img-20240312-2.jpg"
+    },
+    {
+      "place": "QH2011E-TCNH-UEB",
+      "title": "",
+      "title2": "",
+      "description": "",
+      "image": "data/img/img-20240312-3.jpg"
+    },
+    {
+      "place": "QH2011E-TCNH-UEB",
+      "title": "",
+      "title2": "",
+      "description": "",
+      "image": "data/img/img-20240312-4.jpg"
+    },
+    {
+      "place": "QH2011E-TCNH-UEB",
+      "title": "",
+      "title2": "",
+      "description": "",
+      "image": "data/img/img-20240312-5.jpg"
+    },
+    {
+      "place": "QH2011E-TCNH-UEB",
+      "title": "",
+      "title2": "",
+      "description": "",
+      "image": "data/img/img-20240312-6.jpg"
+    },
+    {
+      "place": "QH2011E-TCNH-UEB",
+      "title": "",
+      "title2": "",
+      "description": "",
+      "image": "data/img/img-20240312.jpg"
+    },
+    {
+      "place":"Video demo",
+      "title":"VIDEO",
+      "title2":"",
+      "description":"Video test",
+      "image":"https://res.cloudinary.com/dovesqm35/video/upload/v1759572817/kling_20251004_Image_to_Video_create_mot_2582_0_nyfawq.mp4"
+    }
+  ]
+}

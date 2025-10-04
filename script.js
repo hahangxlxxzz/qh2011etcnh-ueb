@@ -1,5 +1,5 @@
-const PREVIEW_MARGIN = 48;
-const PREVIEW_CONTENT_OFFSET = 72;
+const PREVIEW_MARGIN = 24;
+const PREVIEW_CONTENT_OFFSET = 56;
 const AUTO_RESUME_DELAY = 5000;
 const ease = "sine.inOut";
 
@@ -27,6 +27,11 @@ const resolveImagePath = (imagePath) => {
   return `data/${normalizedPath}`;
 };
 
+const FALLBACK_IMAGE = resolveImagePath('img/img-20111105.jpg');
+
+const PAUSE_SVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="5" width="4" height="14" rx="1"/></svg>`;
+const PLAY_SVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M5 3v18l15-9L5 3z"/></svg>`;
+
 const byId = (id) => document.getElementById(id);
 const cardStage = byId("card-stage");
 const slideNumbers = byId("slide-numbers");
@@ -39,13 +44,15 @@ const state = {
   detailsEven: true,
   offsetTop: 200,
   offsetLeft: 700,
-  cardWidth: 180,
-  cardHeight: 120,
-  gap: 24,
-  numberSize: 50,
+  cardWidth: 140,
+  cardHeight: 90,
+  gap: 18,
+  numberSize: 40,
   autoActive: false,
   isTransitioning: false,
   resumeTimeout: null,
+  userPaused: false,
+  loopToken: 0,
 };
 
 const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
@@ -63,7 +70,22 @@ const getSliderItem = (index) => `#slide-item-${index}`;
 const updateActiveCardClass = () => {
   document.querySelectorAll(".slideshow-card").forEach((card) => {
     const index = Number(card.dataset.cardIndex);
-    card.classList.toggle("slideshow-card--active", index === state.order[0]);
+    const isActive = index === state.order[0];
+    card.classList.toggle("slideshow-card--active", isActive);
+    const vid = card.querySelector('video');
+    if (vid) {
+      try {
+        if (isActive) {
+          vid.muted = true;
+          vid.play().catch(() => {});
+        } else {
+          vid.pause();
+          try { vid.currentTime = 0; } catch (e) {}
+        }
+      } catch (e) {
+        // ignore
+      }
+    }
   });
 };
 
@@ -109,12 +131,21 @@ const animate = (target, duration, properties) =>
 
 const renderSlides = () => {
   const cardsMarkup = destinations
-    .map(
-      (item, index) => `
+    .map((item, index) => {
+      const src = item.image || '';
+      const isVideo = isVideoSrc(src);
+      if (isVideo) {
+        return `
         <article class="slideshow-card" id="card${index}" data-card-index="${index}">
-          <img class="slideshow-card-media" src="${item.image}" alt="${item.place}" loading="lazy" />
-        </article>`
-    )
+          <video class="slideshow-card-media" src="${src}" poster="${FALLBACK_IMAGE}" preload="metadata" playsinline muted loop autoplay></video>
+        </article>`;
+      }
+
+      return `
+        <article class="slideshow-card" id="card${index}" data-card-index="${index}">
+          <img class="slideshow-card-media" src="${src}" alt="${item.place}" loading="lazy" onerror="this.onerror=null; this.src='${FALLBACK_IMAGE}'" />
+        </article>`;
+    })
     .join("");
 
   const cardContentMarkup = destinations
@@ -131,12 +162,8 @@ const renderSlides = () => {
 
   cardStage.innerHTML = `${cardsMarkup}${cardContentMarkup}`;
 
-  const slideNumberMarkup = destinations
-    .map(
-      (_, index) => `<div class="item" id="slide-item-${index}">${index + 1}</div>`
-    )
-    .join("");
-  slideNumbers.innerHTML = slideNumberMarkup;
+  // slide numbers removed; keep the container empty
+  slideNumbers.innerHTML = "";
 };
 
 const playIndicator = async () => {
@@ -269,6 +296,9 @@ const advance = () =>
         gsap.set(`${detailsInactive} .title-line--secondary`, { y: 100 });
         gsap.set(`${detailsInactive} .description`, { y: 50 });
         gsap.set(`${detailsInactive} .action-row`, { y: 60 });
+
+        // reset any zoom/pan transforms after transition completes
+        try { resetAllImageTransforms(); } catch (e) { /* ignore */ }
       },
     });
 
@@ -319,19 +349,26 @@ const runStep = async (withIndicator = true) => {
 
 const loop = async () => {
   if (!state.autoActive) return;
-  await runStep(true);
-  if (state.autoActive) loop();
+  const token = ++state.loopToken;
+  while (state.autoActive && token === state.loopToken) {
+    await runStep(true);
+    // small check to allow cancellation between steps
+    if (!state.autoActive || token !== state.loopToken) break;
+  }
 };
 
-const stopAutoCycle = () => {
+const stopAutoCycle = (userInitiated = false) => {
   state.autoActive = false;
+  state.loopToken += 1; // invalidate any running loops
   clearTimeout(state.resumeTimeout);
+  if (userInitiated) state.userPaused = true;
 };
 
 const scheduleAutoResume = () => {
+  if (state.userPaused) return; // do not auto-resume when user explicitly paused
   clearTimeout(state.resumeTimeout);
   state.resumeTimeout = setTimeout(() => {
-    if (!state.autoActive) {
+    if (!state.autoActive && !state.userPaused) {
       state.autoActive = true;
       loop();
     }
@@ -417,8 +454,22 @@ const normalizeImageSrc = (src) => {
   return src;
 };
 
+const isVideoSrc = (src) => /\.(mp4|webm|ogg)(\?.*)?$/i.test(src) || /^https?:\/\/.+\.(mp4|webm|ogg)(\?.*)?$/i.test(src);
+
 const loadImage = (src, tried = false) =>
   new Promise((resolve, reject) => {
+    if (!src) return reject(new Error('No src'));
+    if (isVideoSrc(src)) {
+      const vid = document.createElement('video');
+      vid.preload = 'metadata';
+      vid.muted = true;
+      vid.playsInline = true;
+      vid.onloadedmetadata = () => resolve(vid);
+      vid.onerror = () => reject(new Error(`Failed to load video: ${src}`));
+      vid.src = src;
+      return;
+    }
+
     const img = new Image();
     img.onload = () => resolve(img);
     img.onerror = () => {
@@ -435,12 +486,53 @@ const loadImage = (src, tried = false) =>
     img.src = src;
   });
 
-const loadImages = () => Promise.all(destinations.map(({ image }) => loadImage(image)));
+const loadImages = async () => {
+  const results = await Promise.allSettled(destinations.map(({ image }) => loadImage(image)));
+  const failed = results.filter((r) => r.status === "rejected").length;
+  if (failed > 0) {
+    console.warn(`Some images failed to load: ${failed}`);
+  }
+  return results;
+};
+
+const applyImageOrientations = () => {
+  document.querySelectorAll('.slideshow-card-media').forEach((el) => {
+    try {
+      const isVideo = el.tagName === 'VIDEO';
+      const getDims = () => {
+        if (isVideo) return { w: el.videoWidth || el.clientWidth, h: el.videoHeight || el.clientHeight };
+        return { w: el.naturalWidth || el.width || el.clientWidth, h: el.naturalHeight || el.height || el.clientHeight };
+      };
+
+      const { w, h } = getDims();
+      if (!w || !h) {
+        // wait for metadata/load
+        if (isVideo) {
+          el.addEventListener('loadedmetadata', () => applyImageOrientations(), { once: true });
+        } else {
+          el.addEventListener('load', () => applyImageOrientations(), { once: true });
+        }
+        return;
+      }
+
+      if (h > w) {
+        el.classList.add('orient-portrait');
+        el.classList.remove('orient-landscape');
+      } else {
+        el.classList.add('orient-landscape');
+        el.classList.remove('orient-portrait');
+      }
+    } catch (e) {
+      // ignore
+    }
+  });
+};
 
 const fetchDestinations = async () => {
-  const response = await fetch("data/destinations.json");
+  // append timestamp to avoid stale caching when editing the JSON
+  const response = await fetch(`data/destinations.json?ts=${Date.now()}`);
   if (!response.ok) {
-    throw new Error("Không thể tải dữ liệu slideshow");
+    throw new Error("Không thể tải d��� liệu slideshow");
   }
 
   const payload = await response.json();
@@ -553,9 +645,237 @@ function init() {
   gsap.to(detailsActive, { opacity: 1, x: 0, ease, delay: startDelay });
 }
 
+const reverseAdvance = () =>
+  new Promise((resolve) => {
+    // move last item to front
+    const last = state.order.pop();
+    state.order.unshift(last);
+    state.detailsEven = !state.detailsEven;
+    const detailsActive = state.detailsEven ? "#details-even" : "#details-odd";
+    updateDetailsPanel(detailsActive, destinations[state.order[0]]);
+    updateActiveCardClass();
+
+    computePreviewOffsets(state.order.length - 1);
+
+    // quickly set positions without heavy animation for reliability
+    const [active, ...rest] = state.order;
+    gsap.set(getCard(active), { x: 0, y: 0, width: window.innerWidth, height: window.innerHeight });
+
+    rest.forEach((index, position) => {
+      const xTarget = state.offsetLeft + position * (state.cardWidth + state.gap);
+      gsap.set(getCard(index), {
+        x: xTarget,
+        y: state.offsetTop,
+        width: state.cardWidth,
+        height: state.cardHeight,
+        zIndex: 30,
+        borderRadius: 16,
+      });
+      gsap.set(getCardContent(index), {
+        x: xTarget,
+        y: state.offsetTop + state.cardHeight - PREVIEW_CONTENT_OFFSET,
+        opacity: 1,
+        zIndex: 40,
+      });
+    });
+
+    // ensure videos respond
+    updateActiveCardClass();
+    setTimeout(resolve, 120);
+  });
+
 const attachEventListeners = () => {
   cardStage.addEventListener("click", handleCardClick);
   window.addEventListener("resize", handleResize);
+
+  const pauseBtn = document.querySelector('.pause-button');
+  if (pauseBtn) {
+    // set initial icon
+    pauseBtn.innerHTML = PAUSE_SVG;
+    pauseBtn.addEventListener('click', () => {
+      if (state.autoActive) {
+        // user paused explicitly
+        stopAutoCycle(true);
+        pauseBtn.classList.add('paused');
+        pauseBtn.setAttribute('aria-pressed', 'true');
+        pauseBtn.innerHTML = PLAY_SVG;
+      } else {
+        // user resumed
+        state.userPaused = false;
+        state.autoActive = true;
+        pauseBtn.classList.remove('paused');
+        pauseBtn.setAttribute('aria-pressed', 'false');
+        pauseBtn.innerHTML = PAUSE_SVG;
+        loop();
+      }
+    });
+  }
+
+  // drag to navigate
+  let pointerDown = false;
+  let startX = 0;
+  let currentX = 0;
+  const THRESHOLD = 80;
+  let activeIndex = null;
+
+  const onPointerDown = (e) => {
+    const card = e.target.closest('.slideshow-card');
+    if (!card) return;
+    activeIndex = Number(card.dataset.cardIndex);
+    if (activeIndex !== state.order[0]) return;
+
+    pointerDown = true;
+    startX = e.clientX || (e.touches && e.touches[0].clientX) || 0;
+    stopAutoCycle(false); // temporary stop
+  };
+
+  const onPointerMove = (e) => {
+    if (!pointerDown) return;
+    currentX = e.clientX || (e.touches && e.touches[0].clientX) || 0;
+    const dx = currentX - startX;
+    // move active card
+    try {
+      gsap.set(getCard(state.order[0]), { x: dx });
+    } catch (err) {}
+  };
+
+  const onPointerUp = async (e) => {
+    if (!pointerDown) return;
+    pointerDown = false;
+    const dx = currentX - startX;
+    try {
+      // animate back if below threshold
+      if (dx < -THRESHOLD) {
+        await runStep(false);
+      } else if (dx > THRESHOLD) {
+        await reverseAdvance();
+      } else {
+        gsap.to(getCard(state.order[0]), { x: 0, duration: 0.2 });
+      }
+    } catch (err) {
+      console.error(err);
+    }
+    // schedule resume (unless user paused)
+    scheduleAutoResume();
+  };
+
+  cardStage.addEventListener('pointerdown', onPointerDown);
+  window.addEventListener('pointermove', onPointerMove);
+  window.addEventListener('pointerup', onPointerUp);
+};
+
+// Zoom / pan support for images (desktop and mobile)
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+
+const resetImageTransform = (img) => {
+  img.style.transition = '';
+  img.style.transform = '';
+  img.dataset.scale = '1';
+  img.dataset.tx = '0';
+  img.dataset.ty = '0';
+};
+
+const enableZoomOnImage = (img) => {
+  if (!img) return;
+  img.style.touchAction = 'none';
+  img.dataset.scale = img.dataset.scale || '1';
+  img.dataset.tx = img.dataset.tx || '0';
+  img.dataset.ty = img.dataset.ty || '0';
+
+  let pointerDown = false;
+  let lastX = 0;
+  let lastY = 0;
+  let isPanning = false;
+
+  // wheel zoom (desktop)
+  const onWheel = (e) => {
+    if (!e.ctrlKey && !e.metaKey) e.preventDefault();
+    const delta = -e.deltaY;
+    const cur = parseFloat(img.dataset.scale) || 1;
+    const factor = 1 + (delta > 0 ? 0.08 : -0.08);
+    const next = clamp(cur * factor, 1, 3);
+    img.dataset.scale = String(next);
+    img.style.transform = `translate(${img.dataset.tx}px, ${img.dataset.ty}px) scale(${next})`;
+  };
+
+  // pointer events for pan
+  const onPointerDown = (e) => {
+    pointerDown = true;
+    lastX = e.clientX;
+    lastY = e.clientY;
+    img.setPointerCapture && img.setPointerCapture(e.pointerId);
+  };
+  const onPointerMove = (e) => {
+    if (!pointerDown) return;
+    const curScale = parseFloat(img.dataset.scale) || 1;
+    if (curScale <= 1) return;
+    isPanning = true;
+    const dx = e.clientX - lastX;
+    const dy = e.clientY - lastY;
+    lastX = e.clientX;
+    lastY = e.clientY;
+    const tx = clamp(parseFloat(img.dataset.tx) + dx, -img.offsetWidth * (curScale - 1), img.offsetWidth * (curScale - 1));
+    const ty = clamp(parseFloat(img.dataset.ty) + dy, -img.offsetHeight * (curScale - 1), img.offsetHeight * (curScale - 1));
+    img.dataset.tx = String(tx);
+    img.dataset.ty = String(ty);
+    img.style.transform = `translate(${tx}px, ${ty}px) scale(${curScale})`;
+  };
+  const onPointerUp = (e) => {
+    pointerDown = false;
+    if (isPanning) {
+      isPanning = false;
+    }
+    try { img.releasePointerCapture && img.releasePointerCapture(e.pointerId); } catch (err) {}
+  };
+
+  // touch pinch
+  let touchStartDist = 0;
+  let initialScale = 1;
+  const getDist = (t0, t1) => Math.hypot(t1.clientX - t0.clientX, t1.clientY - t0.clientY);
+  const onTouchStart = (e) => {
+    if (e.touches && e.touches.length === 2) {
+      touchStartDist = getDist(e.touches[0], e.touches[1]);
+      initialScale = parseFloat(img.dataset.scale) || 1;
+    }
+  };
+  const onTouchMove = (e) => {
+    if (e.touches && e.touches.length === 2) {
+      e.preventDefault();
+      const d = getDist(e.touches[0], e.touches[1]);
+      const ratio = d / (touchStartDist || d);
+      const next = clamp(initialScale * ratio, 1, 3);
+      img.dataset.scale = String(next);
+      img.style.transform = `translate(${img.dataset.tx}px, ${img.dataset.ty}px) scale(${next})`;
+    }
+  };
+
+  const onDblClick = (e) => {
+    const cur = parseFloat(img.dataset.scale) || 1;
+    const next = cur > 1 ? 1 : 2;
+    img.dataset.scale = String(next);
+    img.dataset.tx = '0';
+    img.dataset.ty = '0';
+    img.style.transform = `translate(0px, 0px) scale(${next})`;
+  };
+
+  img.addEventListener('wheel', onWheel, { passive: false });
+  img.addEventListener('pointerdown', onPointerDown);
+  window.addEventListener('pointermove', onPointerMove);
+  window.addEventListener('pointerup', onPointerUp);
+  img.addEventListener('touchstart', onTouchStart, { passive: false });
+  img.addEventListener('touchmove', onTouchMove, { passive: false });
+  img.addEventListener('dblclick', onDblClick);
+
+  // reset transforms when image is re-rendered or changed
+  img.addEventListener('load', () => resetImageTransform(img));
+};
+
+const enableZoomForAll = () => {
+  document.querySelectorAll('.slideshow-card-media').forEach((img) => enableZoomOnImage(img));
+};
+
+const resetAllImageTransforms = () => {
+  document.querySelectorAll('.slideshow-card-media').forEach((img) => resetImageTransform(img));
 };
 
 const start = async () => {
@@ -569,6 +889,8 @@ const start = async () => {
     updateActiveCardClass();
     attachEventListeners();
     await loadImages();
+    applyImageOrientations();
+    enableZoomForAll();
     init();
   } catch (error) {
     console.error('Start error:', error && error.message ? error.message : error, error);
