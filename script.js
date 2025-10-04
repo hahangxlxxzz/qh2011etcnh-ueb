@@ -581,6 +581,138 @@ function init() {
 const attachEventListeners = () => {
   cardStage.addEventListener("click", handleCardClick);
   window.addEventListener("resize", handleResize);
+
+  const pauseBtn = document.querySelector('.pause-button');
+  if (pauseBtn) {
+    pauseBtn.addEventListener('click', () => {
+      if (state.autoActive) {
+        stopAutoCycle();
+        pauseBtn.classList.add('paused');
+        pauseBtn.setAttribute('aria-pressed', 'true');
+        pauseBtn.textContent = 'Resume';
+      } else {
+        state.autoActive = true;
+        pauseBtn.classList.remove('paused');
+        pauseBtn.setAttribute('aria-pressed', 'false');
+        pauseBtn.textContent = 'Pause';
+        loop();
+      }
+    });
+  }
+};
+
+// Zoom / pan support for images (desktop and mobile)
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+
+const resetImageTransform = (img) => {
+  img.style.transition = '';
+  img.style.transform = '';
+  img.dataset.scale = '1';
+  img.dataset.tx = '0';
+  img.dataset.ty = '0';
+};
+
+const enableZoomOnImage = (img) => {
+  if (!img) return;
+  img.style.touchAction = 'none';
+  img.dataset.scale = img.dataset.scale || '1';
+  img.dataset.tx = img.dataset.tx || '0';
+  img.dataset.ty = img.dataset.ty || '0';
+
+  let pointerDown = false;
+  let lastX = 0;
+  let lastY = 0;
+  let isPanning = false;
+
+  // wheel zoom (desktop)
+  const onWheel = (e) => {
+    if (!e.ctrlKey && !e.metaKey) e.preventDefault();
+    const delta = -e.deltaY;
+    const cur = parseFloat(img.dataset.scale) || 1;
+    const factor = 1 + (delta > 0 ? 0.08 : -0.08);
+    const next = clamp(cur * factor, 1, 3);
+    img.dataset.scale = String(next);
+    img.style.transform = `translate(${img.dataset.tx}px, ${img.dataset.ty}px) scale(${next})`;
+  };
+
+  // pointer events for pan
+  const onPointerDown = (e) => {
+    pointerDown = true;
+    lastX = e.clientX;
+    lastY = e.clientY;
+    img.setPointerCapture && img.setPointerCapture(e.pointerId);
+  };
+  const onPointerMove = (e) => {
+    if (!pointerDown) return;
+    const curScale = parseFloat(img.dataset.scale) || 1;
+    if (curScale <= 1) return;
+    isPanning = true;
+    const dx = e.clientX - lastX;
+    const dy = e.clientY - lastY;
+    lastX = e.clientX;
+    lastY = e.clientY;
+    const tx = clamp(parseFloat(img.dataset.tx) + dx, -img.offsetWidth * (curScale - 1), img.offsetWidth * (curScale - 1));
+    const ty = clamp(parseFloat(img.dataset.ty) + dy, -img.offsetHeight * (curScale - 1), img.offsetHeight * (curScale - 1));
+    img.dataset.tx = String(tx);
+    img.dataset.ty = String(ty);
+    img.style.transform = `translate(${tx}px, ${ty}px) scale(${curScale})`;
+  };
+  const onPointerUp = (e) => {
+    pointerDown = false;
+    if (isPanning) {
+      isPanning = false;
+    }
+    try { img.releasePointerCapture && img.releasePointerCapture(e.pointerId); } catch (err) {}
+  };
+
+  // touch pinch
+  let touchStartDist = 0;
+  let initialScale = 1;
+  const getDist = (t0, t1) => Math.hypot(t1.clientX - t0.clientX, t1.clientY - t0.clientY);
+  const onTouchStart = (e) => {
+    if (e.touches && e.touches.length === 2) {
+      touchStartDist = getDist(e.touches[0], e.touches[1]);
+      initialScale = parseFloat(img.dataset.scale) || 1;
+    }
+  };
+  const onTouchMove = (e) => {
+    if (e.touches && e.touches.length === 2) {
+      e.preventDefault();
+      const d = getDist(e.touches[0], e.touches[1]);
+      const ratio = d / (touchStartDist || d);
+      const next = clamp(initialScale * ratio, 1, 3);
+      img.dataset.scale = String(next);
+      img.style.transform = `translate(${img.dataset.tx}px, ${img.dataset.ty}px) scale(${next})`;
+    }
+  };
+
+  const onDblClick = (e) => {
+    const cur = parseFloat(img.dataset.scale) || 1;
+    const next = cur > 1 ? 1 : 2;
+    img.dataset.scale = String(next);
+    img.dataset.tx = '0';
+    img.dataset.ty = '0';
+    img.style.transform = `translate(0px, 0px) scale(${next})`;
+  };
+
+  img.addEventListener('wheel', onWheel, { passive: false });
+  img.addEventListener('pointerdown', onPointerDown);
+  window.addEventListener('pointermove', onPointerMove);
+  window.addEventListener('pointerup', onPointerUp);
+  img.addEventListener('touchstart', onTouchStart, { passive: false });
+  img.addEventListener('touchmove', onTouchMove, { passive: false });
+  img.addEventListener('dblclick', onDblClick);
+
+  // reset transforms when image is re-rendered or changed
+  img.addEventListener('load', () => resetImageTransform(img));
+};
+
+const enableZoomForAll = () => {
+  document.querySelectorAll('.slideshow-card-media').forEach((img) => enableZoomOnImage(img));
+};
+
+const resetAllImageTransforms = () => {
+  document.querySelectorAll('.slideshow-card-media').forEach((img) => resetImageTransform(img));
 };
 
 const start = async () => {
