@@ -657,11 +657,14 @@ const attachEventListeners = () => {
     pauseBtn.innerHTML = PAUSE_SVG;
     pauseBtn.addEventListener('click', () => {
       if (state.autoActive) {
-        stopAutoCycle();
+        // user paused explicitly
+        stopAutoCycle(true);
         pauseBtn.classList.add('paused');
         pauseBtn.setAttribute('aria-pressed', 'true');
         pauseBtn.innerHTML = PLAY_SVG;
       } else {
+        // user resumed
+        state.userPaused = false;
         state.autoActive = true;
         pauseBtn.classList.remove('paused');
         pauseBtn.setAttribute('aria-pressed', 'false');
